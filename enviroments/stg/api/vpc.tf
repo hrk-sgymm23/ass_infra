@@ -1,10 +1,10 @@
-locals {
-  ass_cidr_block = "172.10.0.0/16"
-}
+# locals {
+#   ass_cidr_block = "172.10.0.0/16"
+# }
 
 module "ass_vpc_stg" {
   source = "../../../modules/vpc"
-  cidr_block = local.ass_cidr_block
+  cidr_block = "172.10.0.0/16"
 }
 
 module "ass_sbunet_stg" {

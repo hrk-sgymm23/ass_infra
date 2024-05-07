@@ -70,14 +70,15 @@ resource "aws_nat_gateway" "main" {
 resource "aws_route" "public_route" {
   route_table_id = aws_route_table.public.id
   gateway_id = aws_internet_gateway.main.id
-  egress_only_gateway_id = "0.0.0.0/0"
+  destination_cidr_block = "0.0.0.0/0"
 }
 
 # プライベート
 resource "aws_route" "private_route" {
   for_each = toset(var.availability_zones)
-  route_table_id = aws_route_table.private.id
+  route_table_id = aws_route_table.private[each.value].id
   nat_gateway_id = aws_nat_gateway.main[each.value].id
+  destination_cidr_block = "0.0.0.0/0"
 }
 
 
@@ -93,5 +94,5 @@ resource "aws_route_table_association" "public_association" {
 resource "aws_route_table_association" "private_association" {
   for_each = toset(var.availability_zones)
   subnet_id = aws_subnet.private-subnet[each.value].id
-  route_table_id = aws_route_table.public[each.value].id
+  route_table_id = aws_route_table.private[each.value].id
 }
