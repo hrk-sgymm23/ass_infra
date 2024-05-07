@@ -55,15 +55,15 @@ resource "aws_eip" "main" {
 }
 
 # NatGateway
-resource "aws_nat_gateway" "main" {
-  for_each = toset(var.availability_zones)
-  allocation_id = aws_eip.main[each.value].id
-  subnet_id = aws_subnet.public-subnet[each.value].id
-  depends_on = [ aws_internet_gateway.main ]
-  tags = {
-    Zone = each.value
-  }
-}
+# resource "aws_nat_gateway" "main" {
+#   for_each = toset(var.availability_zones)
+#   allocation_id = aws_eip.main[each.value].id
+#   subnet_id = aws_subnet.public-subnet[each.value].id
+#   depends_on = [ aws_internet_gateway.main ]
+#   tags = {
+#     Zone = each.value
+#   }
+# }
 
 # ゲートウェイとルートテーブルの紐付け
 # パブリック
@@ -74,12 +74,13 @@ resource "aws_route" "public_route" {
 }
 
 # プライベート
-resource "aws_route" "private_route" {
-  for_each = toset(var.availability_zones)
-  route_table_id = aws_route_table.private[each.value].id
-  nat_gateway_id = aws_nat_gateway.main[each.value].id
-  destination_cidr_block = "0.0.0.0/0"
-}
+# TODO:  after natgateway create
+# resource "aws_route" "private_route" {
+#   for_each = toset(var.availability_zones)
+#   route_table_id = aws_route_table.private[each.value].id
+#   nat_gateway_id = aws_nat_gateway.main[each.value].id
+#   destination_cidr_block = "0.0.0.0/0"
+# }
 
 
 # ゲートウェイとサブネットの紐付け
