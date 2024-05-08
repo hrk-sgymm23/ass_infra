@@ -1,14 +1,14 @@
 variable "common_name" {
-    description = "common name"
-    type        = string
+  description = "common name"
+  type        = string
 }
 
 variable "s3_bucket_domain_name" {
-    description = "bucket domain name"
-    type        = string
+  description = "bucket domain name"
+  type        = string
 }
 
 variable "s3_bucket_id" {
-    description = "bucket id"
-    type        = string
+  description = "bucket id"
+  type        = string
 }

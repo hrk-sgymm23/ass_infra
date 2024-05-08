@@ -1,25 +1,25 @@
 # サブネット
 resource "aws_subnet" "public-subnet" {
-  vpc_id = var.vpc_id
-  for_each = toset(var.availability_zones)
-  availability_zone = each.value
-  cidr_block = cidrsubnet(var.vpc_cidr_block, 8, index(var.availability_zones, each.value))
+  vpc_id                  = var.vpc_id
+  for_each                = toset(var.availability_zones)
+  availability_zone       = each.value
+  cidr_block              = cidrsubnet(var.vpc_cidr_block, 8, index(var.availability_zones, each.value))
   map_public_ip_on_launch = true
   tags = {
     public = true
-    Zone = each.value
+    Zone   = each.value
   }
 }
 
 resource "aws_subnet" "private-subnet" {
-  vpc_id = var.vpc_id
-  for_each = toset(var.availability_zones)
+  vpc_id            = var.vpc_id
+  for_each          = toset(var.availability_zones)
   availability_zone = each.value
   # + lengsすることでCIDRが重複せず、連続するようになる。
   cidr_block = cidrsubnet(var.vpc_cidr_block, 8, index(var.availability_zones, each.value) + length(aws_subnet.public-subnet))
   tags = {
     Private = true
-    Zone = each.value
+    Zone    = each.value
   }
 }
 
@@ -48,7 +48,7 @@ resource "aws_route_table" "private" {
 # ElasticIP
 resource "aws_eip" "main" {
   for_each = toset(var.availability_zones)
-  vpc = true
+  vpc      = true
   tags = {
     Zone = each.value
   }
@@ -68,8 +68,8 @@ resource "aws_eip" "main" {
 # ゲートウェイとルートテーブルの紐付け
 # パブリック
 resource "aws_route" "public_route" {
-  route_table_id = aws_route_table.public.id
-  gateway_id = aws_internet_gateway.main.id
+  route_table_id         = aws_route_table.public.id
+  gateway_id             = aws_internet_gateway.main.id
   destination_cidr_block = "0.0.0.0/0"
 }
 
@@ -86,14 +86,14 @@ resource "aws_route" "public_route" {
 # ゲートウェイとサブネットの紐付け
 # パブリック
 resource "aws_route_table_association" "public_association" {
-  for_each = toset(var.availability_zones)
-  subnet_id = aws_subnet.public-subnet[each.value].id
+  for_each       = toset(var.availability_zones)
+  subnet_id      = aws_subnet.public-subnet[each.value].id
   route_table_id = aws_route_table.public.id
 }
 
 # プライベート
 resource "aws_route_table_association" "private_association" {
-  for_each = toset(var.availability_zones)
-  subnet_id = aws_subnet.private-subnet[each.value].id
+  for_each       = toset(var.availability_zones)
+  subnet_id      = aws_subnet.private-subnet[each.value].id
   route_table_id = aws_route_table.private[each.value].id
 }
