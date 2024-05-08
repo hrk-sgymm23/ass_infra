@@ -1,0 +1,17 @@
+{
+  "rules": [
+    {
+      "rulePriority": 1,
+      "description": "ECR10個まで保持する",
+      "selection": {
+        "tagStatus": "tagged",
+        "tagPrefixList": ["release"],
+        "countType": "imageCountMoreThan",
+        "countNumber": 10
+      },
+      "action": {
+        "type": "expire"
+      }
+    }
+  ]
+}
