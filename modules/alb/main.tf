@@ -28,7 +28,7 @@ data "aws_elb_service_account" "main" {}
 
 # ロードバランサー
 resource "aws_lb" "main" {
-  name               = var.common_name
+  name               = "${var.common_name}-alb-${var.environment}"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [
@@ -38,7 +38,7 @@ resource "aws_lb" "main" {
   ]
   subnets            = var.public_subnet_ids
 
-  enable_deletion_protection = true
+  enable_deletion_protection = false
   access_logs {
     bucket = aws_s3_bucket.alb_log_stg.bucket
     enabled = true
