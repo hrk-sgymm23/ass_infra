@@ -31,16 +31,16 @@ resource "aws_lb" "main" {
   name               = "${var.common_name}-alb-${var.environment}"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [
+  security_groups = [
     module.https_security_group.security_group_id,
     module.http_redirect_security_group.security_group_id,
     module.http_security_group.security_group_id
   ]
-  subnets            = var.public_subnet_ids
+  subnets = var.public_subnet_ids
 
   enable_deletion_protection = false
   access_logs {
-    bucket = aws_s3_bucket.alb_log_stg.bucket
+    bucket  = aws_s3_bucket.alb_log_stg.bucket
     enabled = true
   }
 }

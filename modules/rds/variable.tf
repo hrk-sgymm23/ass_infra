@@ -1,61 +1,61 @@
 variable "enviroment" {
   description = "Enviromet Name"
-  type = string
+  type        = string
 }
 
 variable "common_name" {
   description = "common_name"
-  type = string
+  type        = string
 }
 
 variable "parameter_group_family" {
   description = "Parameter Group Family"
-  type = string
+  type        = string
 }
 
-variable "engine_name" {
-  description = "DB Engine Name"
-  type = string
+variable "engine" {
+  description = "DB Engine"
+  type        = string
 }
 
 variable "major_engine_version" {
   description = "Major DB Engine Version"
-  type = string
+  type        = string
 }
 
-variable "engine_verdion" {
+variable "engine_version" {
   description = "DB Engine Version"
-  type = string
+  type        = string
 }
 
 variable "db_instance_class" {
   description = "DB Instance Class"
-  type = string
+  type        = string
 }
 
 variable "db_name" {
   description = "DB Name"
-  type = string
+  type        = string
 }
 
 variable "db_user_name" {
   description = "DB User Name"
-  type = string
+  type        = string
 }
 
 variable "multi_az" {
   description = "DB Multi AZ"
-  type = bool
+  type        = bool
 }
 
 variable "port" {
   description = "DB Port"
-  type = number
+  type        = number
 }
 
 variable "vpc_id" {
   description = "VPC Id"
-  type = string
+  type        = string
 }
 
 variable "private_subnet_ids" {
@@ -65,10 +65,10 @@ variable "private_subnet_ids" {
 
 variable "cidr_blocks" {
   description = "Security Group Cidr Blocks"
-  type = list(string)
+  type        = list(string)
 }
 
 variable "enabled_cloudwatch_logs_exports" {
   description = "enabled_cloudwatch_logs_exports"
-  type = list(type)
+  type        = list(string)
 }
