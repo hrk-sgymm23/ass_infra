@@ -1,0 +1,104 @@
+[
+    {
+      "name": "rails",
+      "image": "${rails_ecr_arn}:${rails_tag}",
+      "memoryReservation": 512,
+      "essential": true,
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/${service_name}",
+          "awslogs-region": "ap-northeast-1",
+          "awslogs-stream-prefix": "ecs/${service_name}"
+        }
+      },
+      "entryPoint": [],
+      "portMappings": [
+        {
+          "hostPort": 3000,
+          "protocol": "tcp",
+          "containerPort": 3000
+        }
+      ],
+      "command": [
+        "/app/entrypoint.sh"
+      ],
+      "healthCheck": {
+        "retries": 10,
+        "command": [
+          "CMD-SHELL",
+          "curl localhost:3000/api/health_check",
+          "\"|| exit 1\""
+        ],
+        "timeout": 30,
+        "interval": 5,
+        "startPeriod": 30
+      },
+      "environment": [
+        {
+          "name": "RAILS_ENV",
+          "value": "${environment}"
+        },
+        {
+          "name": "RAILS_LOG_TO_STDOUT",
+          "value": "true"
+        },
+        {
+          "name": "RAILS_SERVE_STATIC_FILES",
+          "value": "true"
+        }
+      ],
+      "secrets": [
+        {
+          "valueFrom": "${ssm_db_host_path}",
+          "name": "DB_HOST"
+        },
+        {
+          "valueFrom": "${ssm_db_password_path}",
+          "name": "DB_PASSWORD"
+        },
+        {
+          "valueFrom": "${ssm_db_username_path}",
+          "name": "DB_USERNAME"
+        },
+        {
+          "valueFrom": "${ssm_rails_master_key_path}",
+          "name": "RAILS_MASTER_KEY"
+        }
+      ]
+    },
+    {
+      "name": "nginx",
+      "image": "${nginx_ecr_arn}:${nginx_tag}",
+      "essential": true,
+      "portMappings": [
+        {
+          "hostPort": 80,
+          "protocol": "tcp",
+          "containerPort": 80
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/${service_name}",
+          "awslogs-region": "ap-northeast-1",
+          "awslogs-stream-prefix": "ecs/${service_name}"
+        }
+      },
+      "dependsOn": [
+        {
+          "containerName": "rails",
+          "condition": "HEALTHY"
+        }
+      ],
+      "healthCheck": {
+        "command": [
+          "CMD-SHELL",
+          "curl -f http://localhost/",
+          "\"|| exit 1\""
+        ]
+      }
+    }
+  ]
+  
