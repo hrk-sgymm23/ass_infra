@@ -30,10 +30,11 @@ resource "aws_db_instance" "main" {
   storage_encrypted               = true
   username                        = replace(var.db_user_name, "-", "_")
   password                        = random_password.rds.result
+  multi_az                        = var.multi_az
   publicly_accessible             = false
-  backup_window                   = "09:10-09:40"
+  backup_window                   = "14:10-14:40"
   backup_retention_period         = 7
-  maintenance_window              = "mon:10:10-mon:10:40"
+  maintenance_window              = "mon:13:10-mon:13:40"
   auto_minor_version_upgrade      = true
   deletion_protection             = false
   skip_final_snapshot             = false
@@ -114,5 +115,62 @@ resource "aws_ssm_parameter" "db_name" {
   description = "DBName"
   lifecycle {
     ignore_changes = [value]
+  }
+}
+
+# EventBridgeScheduler Resources
+# Iam resources
+resource "aws_iam_role" "rds_scheduler_stg" {
+  name               = "${var.common_name}-rds-scheduler-${var.enviroment}-role"
+  assume_role_policy = file("${path.module}/assume_policy.json")
+}
+
+resource "aws_iam_policy" "rds_scheduler" {
+  name   = "${var.common_name}-rds-scheduler-${var.enviroment}-policy"
+  policy = file("${path.module}/rds_scheduler_policy.json")
+}
+
+resource "aws_iam_role_policy_attachment" "rds_scheduler" {
+  role       = aws_iam_role.rds_scheduler_stg.id
+  policy_arn = aws_iam_policy.rds_scheduler.arn
+}
+
+# Scheduler resouces
+locals {
+  stop_rds_schedule  = "cron(0 13 * * ? *)" // 22:00 JST
+  start_rds_schedule = "cron(0 2 * * ? *)"  // 08:00 JST
+}
+
+# Stop RDS
+resource "aws_scheduler_schedule" "rds_stop_stg" {
+  name                = "${var.common_name}-stop-scheduler-${var.enviroment}"
+  schedule_expression = local.stop_rds_schedule
+  flexible_time_window {
+    mode = "OFF"
+  }
+
+  target {
+    arn      = "arn:aws:scheduler:::aws-sdk:rds:stopDBCluster"
+    role_arn = aws_iam_role.rds_scheduler_stg.arn
+    input = jsonencode({
+      DbClusterIdentifier = aws_db_instance.main.identifier
+    })
+  }
+}
+
+#Start RDS
+resource "aws_scheduler_schedule" "rds_start_stg" {
+  name                = "${var.common_name}-start-scheduler-${var.enviroment}"
+  schedule_expression = local.start_rds_schedule
+  flexible_time_window {
+    mode = "OFF"
+  }
+
+  target {
+    arn      = "arn:aws:scheduler:::aws-sdk:rds:startDBCluster"
+    role_arn = aws_iam_role.rds_scheduler_stg.arn
+    input = jsonencode({
+      DbClusterIdentifier = aws_db_instance.main.identifier
+    })
   }
 }

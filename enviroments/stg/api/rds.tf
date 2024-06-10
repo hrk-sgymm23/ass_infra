@@ -4,7 +4,7 @@ module "ass_rds_stg" {
   common_name                     = var.common_name
   parameter_group_family          = "mysql8.0"
   engine                          = "mysql"
-  major_engine_version            = "8"
+  major_engine_version            = "8.0"
   engine_version                  = "8.0"
   db_instance_class               = "db.t3.micro"
   db_name                         = "${var.common_name}-rds-${var.environment}"
