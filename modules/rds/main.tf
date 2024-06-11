@@ -167,10 +167,10 @@ resource "aws_scheduler_schedule" "rds_start_stg" {
   }
 
   target {
-    arn      = "arn:aws:scheduler:::aws-sdk:rds:startDBCluster"
+    arn      = "arn:aws:scheduler:::aws-sdk:rds:startDBInstance"
     role_arn = aws_iam_role.rds_scheduler_stg.arn
     input = jsonencode({
-      DbClusterIdentifier = aws_db_instance.main.identifier
+      DbInstanceIdentifier = aws_db_instance.main.identifier
     })
   }
 }
