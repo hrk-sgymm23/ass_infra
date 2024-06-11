@@ -137,8 +137,8 @@ resource "aws_iam_role_policy_attachment" "rds_scheduler" {
 
 # Scheduler resouces
 locals {
-  stop_rds_schedule  = "cron(0 13 * * ? *)" // 22:00 JST
-  start_rds_schedule = "cron(0 2 * * ? *)"  // 08:00 JST
+  stop_rds_schedule  = "cron(0 15 * * ? *)" // 00:00 JST
+  start_rds_schedule = "cron(0 4 * * ? *)"  // 13:00 JST
 }
 
 # Stop RDS
@@ -150,10 +150,10 @@ resource "aws_scheduler_schedule" "rds_stop_stg" {
   }
 
   target {
-    arn      = "arn:aws:scheduler:::aws-sdk:rds:stopDBCluster"
+    arn      = "arn:aws:scheduler:::aws-sdk:rds:stopDBInstance"
     role_arn = aws_iam_role.rds_scheduler_stg.arn
     input = jsonencode({
-      DbClusterIdentifier = aws_db_instance.main.identifier
+      DbInstanceIdentifier = aws_db_instance.main.identifier
     })
   }
 }
@@ -167,10 +167,10 @@ resource "aws_scheduler_schedule" "rds_start_stg" {
   }
 
   target {
-    arn      = "arn:aws:scheduler:::aws-sdk:rds:startDBCluster"
+    arn      = "arn:aws:scheduler:::aws-sdk:rds:startDBInstance"
     role_arn = aws_iam_role.rds_scheduler_stg.arn
     input = jsonencode({
-      DbClusterIdentifier = aws_db_instance.main.identifier
+      DbInstanceIdentifier = aws_db_instance.main.identifier
     })
   }
 }
