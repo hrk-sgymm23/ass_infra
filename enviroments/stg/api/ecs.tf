@@ -12,15 +12,15 @@ module "ecs_stg" {
   ecs_rails_tag             = "LATEST"
   rails_ecr_arn             = module.rails_ecr_stg.arn
   nginx_ecr_arn             = module.nginx_ecr_stg.arn
-  ssm_db_password_path      = module.ssm_db_password_path
-  ssm_db_username_path      = module.ssm_db_user_name_path
-  ssm_db_name_path          = module.ssm_db_name_path
-  ssm_db_host_path          = module.ssm_db_host_path
-  ssm_db_port_path          = module.ssm_db_port_path
-  ssm_rails_master_key_path = data.aws_ssm_paramater.rails_master_key
-  enviroment                = var.environment
+  ssm_db_password_path      = module.ass_rds_stg.ssm_db_password_path
+  ssm_db_username_path      = module.ass_rds_stg.ssm_db_username_path
+  ssm_db_name_path          = module.ass_rds_stg.ssm_db_name_path
+  ssm_db_host_path          = module.ass_rds_stg.ssm_db_host_path
+  ssm_db_port_path          = module.ass_rds_stg.ssm_db_port_path
+  ssm_rails_master_key_path = data.aws_ssm_parameter.rails_master_key.name
+  environment               = var.environment
 }
 
-data "aws_ssm_paramater" "rails_master_key" {
-  name = "/${var.common_name}-${var.enviroment}/rails-master-key"
+data "aws_ssm_parameter" "rails_master_key" {
+  name = "/${var.common_name}-${var.environment}/rails-master-key"
 }

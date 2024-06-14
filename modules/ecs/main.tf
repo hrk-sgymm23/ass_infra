@@ -2,7 +2,7 @@ data "aws_caller_identity" "current" {}
 
 # ECSクラスター
 resource "aws_ecs_cluster" "main" {
-  name = "${var.common_name}-ecs-cluster-${var.enviroment}"
+  name = "${var.common_name}-ecs-cluster-${var.environment}"
 
   setting {
     name  = "containerInsights"
@@ -23,7 +23,7 @@ resource "aws_ecs_cluster_capacity_providers" "main" {
 
 # ECSタスク定義
 resource "aws_ecs_task_definition" "main" {
-  family                   = "${var.common_name}-task-def-${var.enviroment}"
+  family                   = "${var.common_name}-task-def-${var.environment}"
   cpu                      = var.cpu
   memory                   = var.memory
   network_mode             = "awsvpc"
@@ -31,18 +31,18 @@ resource "aws_ecs_task_definition" "main" {
   execution_role_arn       = module.ecs_task_execution_role.iam_role_arn
   task_role_arn            = module.ecs_task_execution_role.iam_role_arn
   container_definitions = templatefile("${path.module}/task_definitions.tpl.json", {
-    service_name              = "${var.common_name}-${var.enviroment}"
+    service_name              = "${var.common_name}-${var.environment}"
     rails_tag                 = var.ecs_rails_tag
     nginx_tag                 = var.ecs_nginx_tag
     rails_ecr_arn             = var.rails_ecr_arn
     nginx_ecr_arn             = var.nginx_ecr_arn
     ssm_db_password_path      = var.ssm_db_password_path
-    ssm_db_user_name_path     = var.ssm_db_username_path
+    ssm_db_username_path     = var.ssm_db_username_path
     ssm_db_port_path          = var.ssm_db_port_path
     ssm_db_host_path          = var.ssm_db_host_path
     ssm_db_name_path          = var.ssm_db_name_path
     ssm_rails_master_key_path = var.ssm_rails_master_key_path
-    enviroment                = var.enviroment
+    environment               = var.environment
   })
 }
 
@@ -52,7 +52,7 @@ data "aws_iam_policy" "ecs_task_execution_role_policy" {
 }
 
 data "aws_iam_policy_document" "ecs_task_execution" {
-  source_policy_documents = [data.aws_iam_policy.ecs_task_execution_role_policy]
+  source_policy_documents = [data.aws_iam_policy.ecs_task_execution_role_policy.policy]
   statement {
     effect = "Allow"
     actions = [
@@ -86,7 +86,7 @@ module "ecs_task_execution_role" {
 
 # ECS Service
 resource "aws_ecs_service" "main" {
-  name                              = "${var.common_name}-${var.enviroment}"
+  name                              = "${var.common_name}-${var.environment}"
   cluster                           = aws_ecs_cluster.main.arn
   task_definition                   = aws_ecs_task_definition.main.arn
   desired_count                     = var.desired_count
@@ -110,6 +110,6 @@ module "nginx_security_group" {
 }
 
 resource "aws_cloudwatch_log_group" "main" {
-  name              = "/ecs/${var.common_name}-${var.enviroment}"
+  name              = "/ecs/${var.common_name}-${var.environment}"
   retention_in_days = 180
 }

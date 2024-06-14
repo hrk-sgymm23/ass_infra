@@ -3,7 +3,7 @@ variable "common_name" {
   description = "common name"
 }
 
-variable "enviroment" {
+variable "environment" {
   type        = string
   description = "enviroment name"
 }
