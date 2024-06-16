@@ -27,7 +27,7 @@ resource "aws_db_instance" "main" {
   allocated_storage               = 20
   max_allocated_storage           = 20
   storage_type                    = "gp2"
-  storage_encrypted               = true
+  storage_encrypted               = false
   username                        = replace(var.db_user_name, "-", "_")
   password                        = random_password.rds.result
   multi_az                        = var.multi_az
