@@ -81,7 +81,7 @@ resource "aws_lb_listener" "http" {
       status_code = "HTTP_301"
       path        = "/*"
       protocol    = "HTTPS"
-      port        = 433
+      port        = 443
     }
   }
 }
