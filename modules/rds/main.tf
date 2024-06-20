@@ -137,8 +137,8 @@ resource "aws_iam_role_policy_attachment" "rds_scheduler" {
 
 # Scheduler resouces
 locals {
-  stop_rds_schedule  = "cron(0 15 * * ? *)" // 00:00 JST
-  start_rds_schedule = "cron(0 4 * * ? *)"  // 13:00 JST
+  stop_rds_schedule  = "cron(0 16 * * ? *)"  // 25:00 JST
+  start_rds_schedule = "cron(30 10 * * ? *)" // 19:30 JST
 }
 
 # Stop RDS

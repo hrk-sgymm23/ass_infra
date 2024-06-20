@@ -34,10 +34,10 @@ resource "aws_ecs_task_definition" "main" {
     service_name              = "${var.common_name}-${var.environment}"
     rails_tag                 = var.ecs_rails_tag
     nginx_tag                 = var.ecs_nginx_tag
-    rails_ecr_arn             = var.rails_ecr_arn
-    nginx_ecr_arn             = var.nginx_ecr_arn
+    rails_ecr_uri             = var.rails_ecr_uri
+    nginx_ecr_uri             = var.nginx_ecr_uri
     ssm_db_password_path      = var.ssm_db_password_path
-    ssm_db_username_path     = var.ssm_db_username_path
+    ssm_db_username_path      = var.ssm_db_username_path
     ssm_db_port_path          = var.ssm_db_port_path
     ssm_db_host_path          = var.ssm_db_host_path
     ssm_db_name_path          = var.ssm_db_name_path
@@ -56,24 +56,29 @@ data "aws_iam_policy_document" "ecs_task_execution" {
   statement {
     effect = "Allow"
     actions = [
+      "ecr:*",
       "ssm:GetParameters",
       "kms:Decrypt",
+      "secretsmanager:GetSecretValue",
       "ssmmessages:CreateControlChannel",
       "ssmmessages:CreateDataChannel",
       "ssmmessages:OpenControlChannel",
       "ssmmessages:OpenDataChannel",
+      "logs:*",
     ]
     resources = ["*"]
   }
   statement {
-    effect    = "Allow"
-    actions   = ["iam:PassRole"]
-    resources = ["arn:aws:iam::871107023173:role/ecsTaskExecutionRole"]
+    effect  = "Allow"
+    actions = ["iam:PassRole"]
+    # resources = ["arn:aws:iam::730335441282:role/ecsTaskExecutionRole"]
+    resources = ["arn:aws:iam::730335441282:role/ass-ecs-task-execution"]
   }
   statement {
-    effect    = "Allow"
-    actions   = ["ecs:ExecuteCommand"]
-    resources = ["arn:aws:iam::871107023173:role/ecsTaskExecutionRole"]
+    effect  = "Allow"
+    actions = ["ecs:ExecuteCommand"]
+    # resources = ["arn:aws:iam::730335441282:role/ecsTaskExecutionRole"]
+    resources = ["arn:aws:iam::730335441282:role/ass-ecs-task-execution"]
   }
 }
 
@@ -98,6 +103,14 @@ resource "aws_ecs_service" "main" {
     assign_public_ip = false
     security_groups  = [module.nginx_security_group.security_group_id]
     subnets          = var.private_subnet_ids
+  }
+  load_balancer {
+    target_group_arn = var.target_group_arn
+    container_name   = "nginx"
+    container_port   = 80
+  }
+  lifecycle {
+    ignore_changes = [task_definition]
   }
 }
 

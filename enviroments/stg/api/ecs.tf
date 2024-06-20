@@ -8,10 +8,10 @@ module "ecs_stg" {
   desired_count             = 1
   cpu                       = 256
   memory                    = 512
-  ecs_nginx_tag             = "LATEST"
-  ecs_rails_tag             = "LATEST"
-  rails_ecr_arn             = module.rails_ecr_stg.arn
-  nginx_ecr_arn             = module.nginx_ecr_stg.arn
+  ecs_nginx_tag             = "stg"
+  ecs_rails_tag             = "stg"
+  rails_ecr_uri             = module.rails_ecr_stg.image_uri
+  nginx_ecr_uri             = module.nginx_ecr_stg.image_uri
   ssm_db_password_path      = module.ass_rds_stg.ssm_db_password_path
   ssm_db_username_path      = module.ass_rds_stg.ssm_db_username_path
   ssm_db_name_path          = module.ass_rds_stg.ssm_db_name_path

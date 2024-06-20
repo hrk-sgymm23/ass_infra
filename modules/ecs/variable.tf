@@ -53,13 +53,23 @@ variable "ecs_nginx_tag" {
   type        = string
 }
 
-variable "rails_ecr_arn" {
-  description = "Rails ECR ARN"
+# variable "rails_ecr_arn" {
+#   description = "Rails ECR ARN"
+#   type        = string
+# }
+
+variable "rails_ecr_uri" {
+  description = "Rails ECR URI"
   type        = string
 }
 
-variable "nginx_ecr_arn" {
-  description = "Nginx ECR ARN"
+# variable "nginx_ecr_arn" {
+#   description = "Nginx ECR ARN"
+#   type        = string
+# }
+
+variable "nginx_ecr_uri" {
+  description = "Nginx ECR URI"
   type        = string
 }
 

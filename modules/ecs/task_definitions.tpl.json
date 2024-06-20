@@ -1,12 +1,13 @@
 [
     {
       "name": "rails",
-      "image": "${rails_ecr_arn}:${rails_tag}",
+      "image": "${rails_ecr_uri}:${rails_tag}",
       "memoryReservation": 512,
       "essential": true,
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
+          "awslogs-create-group": "true",
           "awslogs-group": "/ecs/${service_name}",
           "awslogs-region": "ap-northeast-1",
           "awslogs-stream-prefix": "ecs/${service_name}"
@@ -69,7 +70,7 @@
     },
     {
       "name": "nginx",
-      "image": "${nginx_ecr_arn}:${nginx_tag}",
+      "image": "${nginx_ecr_uri}:${nginx_tag}",
       "essential": true,
       "portMappings": [
         {
