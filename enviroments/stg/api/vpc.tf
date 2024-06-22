@@ -87,12 +87,3 @@ resource "aws_vpc_endpoint" "ssm" {
   security_group_ids  = [module.vpc_endpoint_security_group.security_group_id]
   subnet_ids          = module.ass_sbunet_stg.private_subnet_ids
 }
-
-resource "aws_vpc_endpoint" "ssmmessages" {
-  vpc_id              = module.ass_vpc_stg.id
-  service_name        = "com.amazonaws.ap-northeast-1.ssmmessages"
-  vpc_endpoint_type   = "Interface"
-  private_dns_enabled = true
-  security_group_ids  = [module.vpc_endpoint_security_group.security_group_id]
-  subnet_ids          = module.ass_sbunet_stg.private_subnet_ids
-}
