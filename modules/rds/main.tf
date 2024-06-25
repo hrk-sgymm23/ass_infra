@@ -37,8 +37,8 @@ resource "aws_db_instance" "main" {
   maintenance_window              = "mon:13:10-mon:13:40"
   auto_minor_version_upgrade      = true
   deletion_protection             = false
-  skip_final_snapshot             = false
-  final_snapshot_identifier       = "${var.common_name}-snapshot-${var.enviroment}"
+  skip_final_snapshot             = true
+  # final_snapshot_identifier       = "${var.common_name}-snapshot-${var.enviroment}"
   port                            = var.port
   apply_immediately               = false
   vpc_security_group_ids          = [module.rds_security_group.security_group_id]
@@ -137,7 +137,7 @@ resource "aws_iam_role_policy_attachment" "rds_scheduler" {
 
 # Scheduler resouces
 locals {
-  stop_rds_schedule  = "cron(0 16 * * ? *)"  // 25:00 JST
+  stop_rds_schedule  = "cron(0 15 * * ? *)"  // 00:00 JST
   start_rds_schedule = "cron(30 10 * * ? *)" // 19:30 JST
 }
 
