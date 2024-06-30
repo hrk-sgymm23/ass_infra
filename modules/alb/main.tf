@@ -11,7 +11,7 @@ module "https_security_group" {
   source              = "../sg"
   security_group_name = "${var.common_name}-https"
   vpc_id              = var.vpc_id
-  port                = 433
+  port                = 443
   cidr_blocks         = ["0.0.0.0/0"]
 }
 

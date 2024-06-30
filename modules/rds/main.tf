@@ -19,25 +19,25 @@ resource "aws_db_subnet_group" "main" {
 
 # RDS Instance
 resource "aws_db_instance" "main" {
-  identifier                      = "${var.common_name}-${var.enviroment}"
-  db_name                         = replace(var.db_name, "-", "_")
-  instance_class                  = var.db_instance_class
-  engine                          = var.engine
-  engine_version                  = var.engine_version
-  allocated_storage               = 20
-  max_allocated_storage           = 20
-  storage_type                    = "gp2"
-  storage_encrypted               = false
-  username                        = replace(var.db_user_name, "-", "_")
-  password                        = random_password.rds.result
-  multi_az                        = var.multi_az
-  publicly_accessible             = false
-  backup_window                   = "14:10-14:40"
-  backup_retention_period         = 7
-  maintenance_window              = "mon:13:10-mon:13:40"
-  auto_minor_version_upgrade      = true
-  deletion_protection             = false
-  skip_final_snapshot             = true
+  identifier                 = "${var.common_name}-${var.enviroment}"
+  db_name                    = replace(var.db_name, "-", "_")
+  instance_class             = var.db_instance_class
+  engine                     = var.engine
+  engine_version             = var.engine_version
+  allocated_storage          = 20
+  max_allocated_storage      = 20
+  storage_type               = "gp2"
+  storage_encrypted          = false
+  username                   = replace(var.db_user_name, "-", "_")
+  password                   = random_password.rds.result
+  multi_az                   = var.multi_az
+  publicly_accessible        = false
+  backup_window              = "14:10-14:40"
+  backup_retention_period    = 7
+  maintenance_window         = "mon:13:10-mon:13:40"
+  auto_minor_version_upgrade = true
+  deletion_protection        = false
+  skip_final_snapshot        = true
   # final_snapshot_identifier       = "${var.common_name}-snapshot-${var.enviroment}"
   port                            = var.port
   apply_immediately               = false
