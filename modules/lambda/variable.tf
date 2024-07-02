@@ -27,3 +27,9 @@ variable "handler" {
   description = "handler_name"
   type        = string
 }
+
+variable "environments_variables" {
+  description = "environments_variables_for_lambda"
+  type        = map(string)
+  default     = {}
+}

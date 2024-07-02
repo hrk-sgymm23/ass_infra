@@ -21,4 +21,7 @@ resource "aws_lambda_function" "main" {
   role             = aws_iam_role.lambda_role.arn
   runtime          = "python3.9"
   handler          = var.handler
+  environment {
+    variables = var.environments_variables
+  }
 }
