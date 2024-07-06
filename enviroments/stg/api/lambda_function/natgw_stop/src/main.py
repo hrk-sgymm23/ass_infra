@@ -35,7 +35,7 @@ def delete_nat_gateway(subnet_id):
 
     return(eip_id)
 
-def detach_nat_gateway_route(route_table_id):
+def dettach_nat_gateway_route(route_table_id):
     logger.info('Detach NatGateway Route...')
     response = client.delete_route(
         DestinationCidrBlock = '0.0.0.0/0',
@@ -44,13 +44,29 @@ def detach_nat_gateway_route(route_table_id):
 
     return(response)
 
-def handler(event, context):
-    logger.info('Execute to Stopping NAT Gateway...')
-    
-    subnet_id = os.environ['SubnetId1']
-    route_table_id = os.environ['RouteTableId']
-    detach_nat_gateway_route(route_table_id)
+def setup_nat_gateway(subnet_id, route_table_id):
+    dettach_nat_gateway_route(route_table_id)
     eip_id = delete_nat_gateway(subnet_id)
     release_elastic_ip(eip_id)
+
+def handler(event, context):
+    logger.info('Execute to Stopping NAT Gateway...')
+
+    nat_gateway_configs = [
+        {
+            "subnet_id": os.environ['SubnetId1'],
+            "route_table_id": os.environ['RouteTableId']
+        },
+        {
+            "subnet_id": os.environ['SubnetId2'],
+            "route_table_id": os.environ['RouteTableId']
+        },
+    ]
+        
+    for config in nat_gateway_configs:
+        setup_nat_gateway(
+            config["subnet_id"],
+            config["route_table_id"]
+        )
 
     logger.info('Finished to Stopping NAT Gateway...')
