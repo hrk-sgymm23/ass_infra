@@ -5,7 +5,9 @@
             "Sid": "LambdaExec",
             "Effect": "Allow",
             "Action": [
-                "logs:*"
+                "logs:*",
+                "ec2:*",
+                "lambda:*"
             ],
             "Resource": "*"
         }

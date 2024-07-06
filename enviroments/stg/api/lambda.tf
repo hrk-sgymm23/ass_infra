@@ -2,6 +2,22 @@ locals {
   subnet_list = tolist(module.ass_sbunet_stg.public_subnet_ids)
 }
 
+# IAM関連
+resource "aws_iam_role" "lambda_role" {
+  name               = "${var.common_name}-lambda-role"
+  assume_role_policy = file("${path.module}/lambda_assume_policy.json")
+}
+
+resource "aws_iam_policy" "lambda_policy" {
+  name   = "${var.common_name}-lambda-policy"
+  policy = file("${path.module}/lambda_policy.json")
+}
+
+resource "aws_iam_role_policy_attachment" "name" {
+  role       = aws_iam_role.lambda_role.id
+  policy_arn = aws_iam_policy.lambda_policy.arn
+}
+
 # NATGW開始用lambda
 data "archive_file" "natgw_start" {
   type        = "zip"
@@ -17,6 +33,7 @@ module "natgateway_start_func" {
   code_hash     = data.archive_file.natgw_start.output_base64sha256
   function_name = "${var.common_name}-natgw-start-func-${var.environment}"
   handler       = "main.handler"
+  iam_role_arn  = aws_iam_role.lambda_role.arn
   environments_variables = {
     SubnetId1       = local.subnet_list[0],
     SubnetId2       = local.subnet_list[1],
@@ -41,6 +58,7 @@ module "natgateway_stop_func" {
   code_hash     = data.archive_file.natgw_stop.output_base64sha256
   function_name = "${var.common_name}-natgw-stop-func-${var.environment}"
   handler       = "main.handler"
+  iam_role_arn  = aws_iam_role.lambda_role.arn
   environments_variables = {
     SubnetId1       = local.subnet_list[0],
     SubnetId2       = local.subnet_list[1],

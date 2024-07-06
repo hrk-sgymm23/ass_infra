@@ -33,3 +33,8 @@ variable "environments_variables" {
   type        = map(string)
   default     = {}
 }
+
+variable "iam_role_arn" {
+  description = "lambda_role_arn"
+  type        = string
+}
