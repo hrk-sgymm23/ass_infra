@@ -59,12 +59,12 @@ def handler(event, context):
     nat_gateway_configs = [
             {
                 "subnet_id": os.environ['SubnetId1'],
-                "route_table_id": os.environ['RouteTableId'],
+                "route_table_id": os.environ['RouteTableId1'],
                 "nat_gateway_name": os.environ['NatGatewayName1'],
             },
             {
                 "subnet_id": os.environ['SubnetId2'],
-                "route_table_id": os.environ['RouteTableId'],
+                "route_table_id": os.environ['RouteTableId1'],
                 "nat_gateway_name": os.environ['NatGatewayName2'],
             }
     ]
@@ -72,8 +72,8 @@ def handler(event, context):
     for config in nat_gateway_configs:
         setup_nat_gateway(
             config["subnet_id"],
-            config["route_table_id"],
-            config["nat_gateway_name"]
+            config["nat_gateway_name"],
+            config["route_table_id"]
         )
 
     logger.info('Finished to Setting up NAT Gateway...')

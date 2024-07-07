@@ -13,6 +13,13 @@ output "private_route_table_ids" {
   value = [for rt in aws_route_table.private : rt.id]
 }
 
-output "public_route_table_id" {
-  value = aws_route_table.public.id
+# output "public_route_table_id" {
+#   value = aws_route_table.public.id
+# }
+
+output "public_route_table_ids" {
+  value = toset([
+    for rt in aws_route_table.private : rt.id
+  ])
 }
+

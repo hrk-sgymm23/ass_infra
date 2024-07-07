@@ -1,16 +1,17 @@
 locals {
-  subnet_list = tolist(module.ass_sbunet_stg.public_subnet_ids)
+  subnet_list         = tolist(module.ass_sbunet_stg.public_subnet_ids)
+  route_table_id_list = tolist(module.ass_sbunet_stg.public_route_table_ids)
 }
 
 # IAM関連
 resource "aws_iam_role" "lambda_role" {
   name               = "${var.common_name}-lambda-role"
-  assume_role_policy = file("${path.module}/lambda_assume_policy.json")
+  assume_role_policy = file("${path.module}/policies/lambda_assume_policy.json")
 }
 
 resource "aws_iam_policy" "lambda_policy" {
   name   = "${var.common_name}-lambda-policy"
-  policy = file("${path.module}/lambda_policy.json")
+  policy = file("${path.module}/policies/lambda_policy.json")
 }
 
 resource "aws_iam_role_policy_attachment" "name" {
@@ -26,7 +27,7 @@ data "archive_file" "natgw_start" {
 }
 
 module "natgateway_start_func" {
-  enviroment    = var.environment
+  environment   = var.environment
   common_name   = var.common_name
   source        = "../../../modules/lambda"
   file_name     = data.archive_file.natgw_start.output_path
@@ -37,7 +38,8 @@ module "natgateway_start_func" {
   environments_variables = {
     SubnetId1       = local.subnet_list[0],
     SubnetId2       = local.subnet_list[1],
-    RouteTableId    = module.ass_sbunet_stg.public_route_table_id
+    RouteTableId1   = local.route_table_id_list[0],
+    RouteTableId2   = local.route_table_id_list[1],
     NatGatewayName1 = "${var.common_name}-Nat-GW-${var.environment}-1"
     NatGatewayName2 = "${var.common_name}-Nat-GW-${var.environment}-2"
   }
@@ -51,7 +53,7 @@ data "archive_file" "natgw_stop" {
 }
 
 module "natgateway_stop_func" {
-  enviroment    = var.environment
+  environment   = var.environment
   common_name   = var.common_name
   source        = "../../../modules/lambda"
   file_name     = data.archive_file.natgw_stop.output_path
@@ -62,19 +64,51 @@ module "natgateway_stop_func" {
   environments_variables = {
     SubnetId1       = local.subnet_list[0],
     SubnetId2       = local.subnet_list[1],
-    RouteTableId    = module.ass_sbunet_stg.public_route_table_id
+    RouteTableId1   = local.route_table_id_list[0],
+    RouteTableId2   = local.route_table_id_list[1],
     NatGatewayName1 = "${var.common_name}-Nat-GW-${var.environment}-1"
     NatGatewayName2 = "${var.common_name}-Nat-GW-${var.environment}-2"
   }
 }
 
-# NATGW用EventBridge用IAMリソース群
-
-
 # NATGW用EventBridgeリソース群
 # 開始、終了時刻をlocalsで定義
+locals {
+  stop_nat_schedule  = "cron(0 15 * * ? *)"  // 00:00 JST
+  start_nat_schedule = "cron(30 10 * * ? *)" // 19:30 JST
+}
 
-# 開始
+# Scheduler用IAMリソース
+resource "aws_iam_role" "scheduler_assume_role" {
+  name               = "${var.common_name}-lambda-scheduler-assume-role"
+  assume_role_policy = file("${path.module}/policies/scheduler_assume_policy.json")
+}
 
 
 # 終了
+# resource "aws_scheduler_schedule" "nat_stop_stg" {
+#   name                = "${var.common_name}-nat-stop-scheduler-${var.environment}"
+#   schedule_expression = local.stop_nat_schedule
+#   flexible_time_window {
+#     mode = "OFF"
+#   }
+
+#   target {
+#     arn      = module.natgateway_stop_func.lambda_arn
+#     role_arn = aws_iam_role.scheduler_assume_role.arn
+#   }
+# }
+
+# 開始
+# resource "aws_scheduler_schedule" "nat_start_stg" {
+#   name                = "${var.common_name}-nat-start-scheduler-${var.environment}"
+#   schedule_expression = local.start_nat_schedule
+#   flexible_time_window {
+#     mode = "OFF"
+#   }
+
+#   target {
+#     arn      = module.natgateway_start_func.lambda_arn
+#     role_arn = aws_iam_role.scheduler_assume_role.arn
+#   }
+# }

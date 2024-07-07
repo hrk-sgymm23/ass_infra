@@ -55,11 +55,11 @@ def handler(event, context):
     nat_gateway_configs = [
         {
             "subnet_id": os.environ['SubnetId1'],
-            "route_table_id": os.environ['RouteTableId']
+            "route_table_id": os.environ['RouteTableId1']
         },
         {
             "subnet_id": os.environ['SubnetId2'],
-            "route_table_id": os.environ['RouteTableId']
+            "route_table_id": os.environ['RouteTableId2']
         },
     ]
         

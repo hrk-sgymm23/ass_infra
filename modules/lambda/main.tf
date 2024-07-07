@@ -5,6 +5,7 @@ resource "aws_lambda_function" "main" {
   role             = var.iam_role_arn
   runtime          = "python3.9"
   handler          = var.handler
+  timeout          = 300
   environment {
     variables = var.environments_variables
   }

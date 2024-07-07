@@ -1,4 +1,4 @@
-variable "enviroment" {
+variable "environment" {
   description = "Enviromet Name"
   type        = string
 }
