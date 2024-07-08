@@ -30,7 +30,8 @@ resource "aws_internet_gateway" "main" {
 
 # ルートテーブル
 resource "aws_route_table" "public" {
-  vpc_id = var.vpc_id
+  for_each = toset(var.availability_zones)
+  vpc_id   = var.vpc_id
   tags = {
     Public = true
   }
@@ -55,32 +56,32 @@ resource "aws_eip" "main" {
 }
 
 # NatGateway
-# resource "aws_nat_gateway" "main" {
-#   for_each = toset(var.availability_zones)
-#   allocation_id = aws_eip.main[each.value].id
-#   subnet_id = aws_subnet.public-subnet[each.value].id
-#   depends_on = [ aws_internet_gateway.main ]
-#   tags = {
-#     Zone = each.value
-#   }
-# }
+resource "aws_nat_gateway" "main" {
+  for_each      = toset(var.availability_zones)
+  allocation_id = aws_eip.main[each.value].id
+  subnet_id     = aws_subnet.public-subnet[each.value].id
+  depends_on    = [aws_internet_gateway.main]
+  tags = {
+    Zone = each.value
+  }
+}
 
 # ゲートウェイとルートテーブルの紐付け
 # パブリック
 resource "aws_route" "public_route" {
-  route_table_id         = aws_route_table.public.id
+  for_each               = toset(var.availability_zones)
+  route_table_id         = aws_route_table.public[each.value].id
   gateway_id             = aws_internet_gateway.main.id
   destination_cidr_block = "0.0.0.0/0"
 }
 
 # プライベート
-# TODO:  after natgateway create
-# resource "aws_route" "private_route" {
-#   for_each = toset(var.availability_zones)
-#   route_table_id = aws_route_table.private[each.value].id
-#   nat_gateway_id = aws_nat_gateway.main[each.value].id
-#   destination_cidr_block = "0.0.0.0/0"
-# }
+resource "aws_route" "private_route" {
+  for_each               = toset(var.availability_zones)
+  route_table_id         = aws_route_table.private[each.value].id
+  nat_gateway_id         = aws_nat_gateway.main[each.value].id
+  destination_cidr_block = "0.0.0.0/0"
+}
 
 
 # ゲートウェイとサブネットの紐付け
@@ -88,7 +89,7 @@ resource "aws_route" "public_route" {
 resource "aws_route_table_association" "public_association" {
   for_each       = toset(var.availability_zones)
   subnet_id      = aws_subnet.public-subnet[each.value].id
-  route_table_id = aws_route_table.public.id
+  route_table_id = aws_route_table.public[each.value].id
 }
 
 # プライベート

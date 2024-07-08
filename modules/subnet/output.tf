@@ -12,3 +12,16 @@ output "private_subnet_ids" {
 output "private_route_table_ids" {
   value = [for rt in aws_route_table.private : rt.id]
 }
+
+output "public_route_table_ids" {
+  value = toset([
+    for rt in aws_route_table.private : rt.id
+  ])
+}
+
+output "eip_ids" {
+  value = toset([
+    for eip in aws_eip.main : eip.allocation_id
+  ])
+}
+
