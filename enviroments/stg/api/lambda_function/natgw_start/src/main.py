@@ -39,7 +39,7 @@ def create_nat_gateway(eip_id, subnet_id, natgateway_name):
 
 
 def attach_nat_gateway_route(nat_gateway_id, route_table_id):
-    logger.info("Start Atach NatGateway!")
+    logger.info(f"Start Atach NatGateway! NATGW:{nat_gateway_id}, RTTB: {route_table_id}")
     responce = client.create_route(
         DestinationCidrBlock = '0.0.0.0/0',
         NatGatewayId = nat_gateway_id,
@@ -47,8 +47,7 @@ def attach_nat_gateway_route(nat_gateway_id, route_table_id):
     )
     logger.info(responce)
 
-def setup_nat_gateway(subnet_id, nat_gateway_name, route_table_id):
-    eip_allocation_id = allocate_eip()
+def setup_nat_gateway(eip_allocation_id,  subnet_id, nat_gateway_name, route_table_id):
     nat_gateway_id = create_nat_gateway(eip_allocation_id, subnet_id, nat_gateway_name)
     attach_nat_gateway_route(nat_gateway_id, route_table_id)
 
@@ -58,19 +57,22 @@ def handler(event, context):
 
     nat_gateway_configs = [
             {
+                "eip_allocation_id": os.environ["EipId1"],
                 "subnet_id": os.environ['SubnetId1'],
                 "route_table_id": os.environ['RouteTableId1'],
                 "nat_gateway_name": os.environ['NatGatewayName1'],
             },
             {
+                "eip_allocation_id": os.environ["EipId2"],
                 "subnet_id": os.environ['SubnetId2'],
-                "route_table_id": os.environ['RouteTableId1'],
+                "route_table_id": os.environ['RouteTableId2'],
                 "nat_gateway_name": os.environ['NatGatewayName2'],
             }
     ]
 
     for config in nat_gateway_configs:
         setup_nat_gateway(
+            config["eip_allocation_id"],
             config["subnet_id"],
             config["nat_gateway_name"],
             config["route_table_id"]

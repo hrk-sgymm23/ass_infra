@@ -1,6 +1,7 @@
 locals {
   subnet_list         = tolist(module.ass_sbunet_stg.public_subnet_ids)
   route_table_id_list = tolist(module.ass_sbunet_stg.public_route_table_ids)
+  eip_id_list         = tolist(module.ass_sbunet_stg.eip_ids)
 }
 
 # IAM関連
@@ -36,6 +37,8 @@ module "natgateway_start_func" {
   handler       = "main.handler"
   iam_role_arn  = aws_iam_role.lambda_role.arn
   environments_variables = {
+    EipId1          = local.eip_id_list[0],
+    EipId2          = local.eip_id_list[1],
     SubnetId1       = local.subnet_list[0],
     SubnetId2       = local.subnet_list[1],
     RouteTableId1   = local.route_table_id_list[0],

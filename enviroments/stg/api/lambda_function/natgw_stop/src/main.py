@@ -8,10 +8,10 @@ logger.setLevel(logging.INFO)
 
 client = boto3.client('ec2')
 
-def release_elastic_ip(eip):
-    logger.info('Open ElasticIP...')
-    responce = client.release_address(AllocationId=eip)
-    logger.info(responce)
+# def release_elastic_ip(eip):
+#     logger.info('Open ElasticIP...')
+#     responce = client.release_address(AllocationId=eip)
+#     logger.info(responce)
 
 def delete_nat_gateway(subnet_id):
     logger.info('Delete NatGateway...')
@@ -46,8 +46,8 @@ def dettach_nat_gateway_route(route_table_id):
 
 def setup_nat_gateway(subnet_id, route_table_id):
     dettach_nat_gateway_route(route_table_id)
-    eip_id = delete_nat_gateway(subnet_id)
-    release_elastic_ip(eip_id)
+    delete_nat_gateway(subnet_id)
+    # release_elastic_ip(eip_id)
 
 def handler(event, context):
     logger.info('Execute to Stopping NAT Gateway...')
