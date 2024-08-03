@@ -47,18 +47,18 @@ resource "aws_lb" "main" {
 
 # ターゲットグループ
 resource "aws_lb_target_group" "main" {
-  name                 = "${var.common_name}-tg-${var.environment}"
+  name                 = "${var.common_name}-target-${var.environment}"
   vpc_id               = var.vpc_id
   port                 = 80
   target_type          = "ip"
   protocol             = "HTTP"
   deregistration_delay = 300
   health_check {
-    path                = "/api/health_checks"
+    path                = "/api/v1/health_check"
     healthy_threshold   = 5
     unhealthy_threshold = 2
     timeout             = 5
-    interval            = 30
+    interval            = 300
     matcher             = 200
     port                = "traffic-port"
     protocol            = "HTTP"

@@ -41,9 +41,14 @@ resource "aws_ecs_task_definition" "main" {
     ssm_db_port_path          = var.ssm_db_port_path
     ssm_db_host_path          = var.ssm_db_host_path
     ssm_db_name_path          = var.ssm_db_name_path
+    ssm_db_endpoint           = var.ssm_db_endpoint
     ssm_rails_master_key_path = var.ssm_rails_master_key_path
     environment               = var.environment
   })
+
+  volume {
+    name = "sockets"
+  }
 }
 
 # ECS実行ロール＆ポリシー
@@ -57,14 +62,13 @@ data "aws_iam_policy_document" "ecs_task_execution" {
     effect = "Allow"
     actions = [
       "ecr:*",
-      "ssm:GetParameters",
       "kms:Decrypt",
       "secretsmanager:GetSecretValue",
-      "ssmmessages:CreateControlChannel",
-      "ssmmessages:CreateDataChannel",
-      "ssmmessages:OpenControlChannel",
-      "ssmmessages:OpenDataChannel",
+      "ssmmessages:*",
+      "ssm:*",
       "logs:*",
+      "rds:*",
+      "rds-db:*"
     ]
     resources = ["*"]
   }

@@ -13,7 +13,6 @@
           "awslogs-stream-prefix": "ecs/${service_name}"
         }
       },
-      "entryPoint": [],
       "portMappings": [
         {
           "hostPort": 3000,
@@ -21,19 +20,20 @@
           "containerPort": 3000
         }
       ],
+      "entryPoint": ["/usr/bin/entrypoint.sh"],
       "command": [
-        "/app/entrypoint.sh"
+        "sh", "-c", "bundle exec puma -C config/puma.rb"
       ],
       "healthCheck": {
         "retries": 10,
         "command": [
           "CMD-SHELL",
-          "curl localhost:3000/api/health_check",
+          "curl localhost:3000/api/v1/health_check",
           "\"|| exit 1\""
         ],
-        "timeout": 30,
-        "interval": 5,
-        "startPeriod": 30
+        "timeout": 60,
+        "interval": 300,
+        "startPeriod": 300
       },
       "environment": [
         {
@@ -65,6 +65,20 @@
         {
           "valueFrom": "${ssm_rails_master_key_path}",
           "name": "RAILS_MASTER_KEY"
+        },
+        {
+          "valueFrom": "${ssm_db_endpoint}",
+          "name": "DB_ENDPOINT"
+        },
+        {
+          "valueFrom": "${ssm_db_name_path}",
+          "name": "DB_NAME"
+        }
+      ],
+      "mountPoints": [
+        {
+            "sourceVolume": "sockets",
+            "containerPath": "/app/tmp/sockets"
         }
       ]
     },
@@ -94,12 +108,21 @@
         }
       ],
       "healthCheck": {
+        "retries": 10,
         "command": [
           "CMD-SHELL",
-          "curl -f http://localhost/",
+          "curl localhost:3000/api/v1/health_check",
           "\"|| exit 1\""
-        ]
-      }
+        ],
+        "timeout": 60,
+        "interval": 300,
+        "startPeriod": 300
+      },
+      "mountPoints": [
+        {
+            "sourceVolume": "sockets",
+            "containerPath": "/app/tmp/sockets"
+        }
+      ]
     }
-  ]
-  
+]

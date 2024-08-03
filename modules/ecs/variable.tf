@@ -102,3 +102,8 @@ variable "ssm_rails_master_key_path" {
   description = "data.aws_ssm_parameter.rails_master_key.name"
   type        = string
 }
+
+variable "ssm_db_endpoint" {
+  description = "DB Endpoint"
+  type        = string
+}

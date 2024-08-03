@@ -17,3 +17,7 @@ output "ssm_db_host_path" {
 output "ssm_db_name_path" {
   value = aws_ssm_parameter.db_name.name
 }
+
+output "ssm_db_endpoint" {
+  value = aws_ssm_parameter.db_endpoint.name
+}
