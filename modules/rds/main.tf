@@ -118,6 +118,16 @@ resource "aws_ssm_parameter" "db_name" {
   }
 }
 
+resource "aws_ssm_parameter" "db_endpoint" {
+  name        = "/${var.common_name}-${var.enviroment}/db/endpoint"
+  type        = "SecureString"
+  value       = aws_db_instance.main.address
+  description = "DBEndpont"
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
 # EventBridgeScheduler Resources
 # Iam resources
 resource "aws_iam_role" "rds_scheduler_stg" {
@@ -139,6 +149,7 @@ resource "aws_iam_role_policy_attachment" "rds_scheduler" {
 locals {
   stop_rds_schedule  = "cron(0 15 * * ? *)"  // 00:00 JST
   start_rds_schedule = "cron(30 10 * * ? *)" // 19:30 JST
+  # start_rds_schedule = "cron(55 1 * * ? *)" // 19:30 JST
 }
 
 # Stop RDS
