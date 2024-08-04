@@ -3,7 +3,7 @@ variable "common_name" {
   type        = string
 }
 
-variable "oai_identifiers" {
-  description = "oai name"
-  type        = string
-}
+# variable "oai_identifiers" {
+#   description = "oai name"
+#   type        = string
+# }
